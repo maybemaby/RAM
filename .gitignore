@@ -1,0 +1,5 @@
+__pycache__
+venv
+*.dat
+Untitled-1.ipynb
+*.env
