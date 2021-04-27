@@ -19,7 +19,7 @@ reddit = praw.Reddit(
 
 def request_pushift(subreddit: str, start_date: str="30d", endpoint:str ="comment") -> Tuple:
     """
-    Requests pushift api for comments and returns list of dicts as first tuple item
+    Requests pushift api for comment or submission endpoint and returns list of dicts as first tuple item
     if successful. Second item is a boolean value true if all the possible results
     were returned.
     """
