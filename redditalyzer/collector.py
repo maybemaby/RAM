@@ -6,6 +6,7 @@ import prawcore.exceptions
 import requests
 import dotenv
 
+# Include your reddit API credentials and the name of the subreddit in an .env file
 dotenv.load_dotenv(".env")
 
 reddit = praw.Reddit(
@@ -63,12 +64,12 @@ def last_created(data: list) -> str:
 
 def retrieve_activity(names: list, time_range:str="month") -> defaultdict:
     """Counts the number of comments and posts made in the past month per subreddit"""
-    activity = defaultdict(lambda: {"activity": 0, "rludwig": 0, "users": 0})
+    activity = defaultdict(lambda: {"activity": 0, f"{os.environ.get('SUBREDDIT')}": 0, "users": 0})
     for index, name in enumerate(names):
         print(index, name)
         # Subreddits per person
         subreddits = set()
-        pre_count = activity['LudwigAhgren']['activity']
+        pre_count = activity[os.environ.get('SUBREDDIT')]['activity']
         try:
             user = reddit.redditor(name)
             comments = user.comments.top(time_filter=time_range)
@@ -81,10 +82,11 @@ def retrieve_activity(names: list, time_range:str="month") -> defaultdict:
             # Increment activity counter everytime the subreddit comes up
             activity[obj.subreddit.display_name]['activity'] += 1
             subreddits.add(obj.subreddit.display_name)
-        post_count = activity['LudwigAhgren']['activity']
-        for entry in subreddits.difference({'LudwigAhgren'}):
+        post_count = activity[os.environ.get('SUBREDDIT')]['activity']
+        for entry in subreddits.difference({os.environ.get('SUBREDDIT')}):
             if post_count > pre_count:
-                activity[entry].update(rludwig=activity[entry]['rludwig']+(post_count - pre_count), users=activity[entry]['users']+1)
+                # Replace the first argument variable with the name of the subreddit you are analyzing
+                activity[entry].update(atrioc=activity[entry][f'{os.environ.get("SUBREDDIT")}']+(post_count - pre_count), users=activity[entry]['users']+1)
             else:
                 activity[entry]['users'] += 1
     return activity
@@ -105,7 +107,7 @@ def activity_patch(names: list, activity, time_range:str="month") -> defaultdict
             continue
         for obj in itertools.chain(comments, submissions):
             subreddits.add(obj.subreddit.display_name)
-        for entry in subreddits.difference({'LudwigAhgren'}):
+        for entry in subreddits.difference({os.environ.get('SUBREDDIT')}):
             if activity[entry].get('users') == None:
                 activity[entry]['users'] = 1
             else:
